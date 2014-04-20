@@ -1,0 +1,18 @@
+	
+def GetNames(strPage):
+	counter = 0
+        names = []
+        title = strPage.find(r'alt="')
+	end = strPage.find(r'"', title+5)
+	print 'title',  title
+	print 'end', end
+	abStr = strPage[title+5:end]
+	while title != -1 and end != -1:
+		if strPage[title+5:end] != abStr:
+			names.append(strPage[title+5:end])
+			print counter, ' ', names[counter]
+		title = strPage.find(r'alt="', end+1)
+		end = strPage.find(r'"', title+5)
+		counter = counter + 1
+
+        return names

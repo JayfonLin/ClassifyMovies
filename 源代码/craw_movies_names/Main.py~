@@ -1,0 +1,48 @@
+#-*- coding:utf-8 -*-
+#Main.py
+import urllib
+import time
+import threading
+import Globalvar
+import WebCrawler
+import signal
+
+def handler(signum, frame):
+     Globalvar.is_exit = True
+     print "receive a signal %d, is_exit = %d"%(signum, Globalvar.is_exit)
+
+g_mutex = threading.Lock()
+g_totalcount = 0  #下载过的页面数
+page = 2
+
+
+if __name__ == "__main__":
+	signal.signal(signal.SIGINT, handler)
+	signal.signal(signal.SIGTERM, handler)
+	thNumber = int(raw_input(r'thread number:'))    #之前类型未转换出bug
+	while page <= 4:
+		Globalvar.g_toDlUrl.append(str('http://www.ffdy.cc/type/movie/index_'+str(page)+'.html'))
+		page += 1
+	print 'start craw'
+	wc = WebCrawler.WebCrawler(thNumber)
+	wc.Craw()
+
+	while 1:
+	    alive = False
+	    for th in wc.threadPool:
+		alive = alive or th.isAlive()
+	    if not alive:
+		print 'break'
+		break 
+	j = 0
+	print 'write to file txt'
+	content = open(r'movies/movies.txt', 'w+')
+	#content.write(u'电影列表')
+	while j < len(Globalvar.names):
+		content.write(str(j+1) + '. ' + Globalvar.names[j] + str('\n'))
+		j = j + 1
+	else:
+		print 'finished'
+	
+
+
